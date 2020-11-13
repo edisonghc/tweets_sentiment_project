@@ -1,24 +1,31 @@
 from collections import Counter
+import numpy as np
 
 class Features(object):
 
     def __init__(self):
-        self.vocab = []
+        self.train_vocab = []
+    
     
     def add_to_vocab(self, processed_tweet):
         for word in processed_tweet:
-            if not word in self.vocab:
-                self.vocab.append(word.lower())
+            if not word in self.train_vocab:
+                self.train_vocab.append(word.lower())
 
         
     
-    def extractor(self, processed_tweet):
+    def extractor(self, processed_tweet, vocab):
+        test_features = np.zeros(len(vocab))
         ids = []
         for word in processed_tweet:
-            if word.lower() in self.vocab:
-                ids.append(self.vocab.index(word.lower()))
+            try:
+                index = vocab.index(word)
+            except ValueError:
+                index = -1
+            if index >= 0:
+                test_features[index] = test_features[index]+1
 
-        return Counter(ids)
+        return test_features
 
         
 
