@@ -9,6 +9,7 @@ from Evaluation import *
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
 
 import os
 import time
@@ -32,6 +33,9 @@ DATASET_ENCODING = "ISO-8859-1"
 TEXT_CLEANING_RE = "@\S+|https?:\S+|http?:\S|[^A-Za-z0-9]+"
 
 train_filepath = "./example_training/input/training.1600000.processed.noemoticon.csv"
+
+#data split parameter
+SPLIT_SIZE = 0.25
 
 # In[2]:
 # open and read data file
@@ -69,9 +73,10 @@ print("DONE!")
 # df['text'] = df.apply(lambda row: nltk.word_tokenize(row['text']), axis=1)
 # print("DONE!")
 
-df = df.sample(frac=1).reset_index(drop=True)
-tweets_for_training = df.head(120000)
-tweets_for_testing = df.tail(40000)
+df = df.sample(frac=0.1).reset_index(drop=True)
+#tweets_for_training = df.head(120000)
+#tweets_for_testing = df.tail(40000)
+tweets_for_training, tweets_for_testing, y_tr, y_te = train_test_split(df, df['text'], test_size=SPLIT_SIZE, random_state=0)
 
 print(">>>>>>>>>>Building Vocabulary")
 # feature_collection = Features()
