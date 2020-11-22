@@ -1,20 +1,21 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[18]:
+# In[1]:
 
-from FeatureExtractor import *
-from LogisticRegression import *
+from FeatureExtractor import CountVectorizer
+from LogisticRegression import LogisticRegression
 from Evaluation import *
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 
 import os
 import time
 from collections import Counter
 import re
+from importlib import reload
 
-import matplotlib.pyplot as plt
 import nltk
 nltk.download('stopwords')
 from nltk.corpus import stopwords
@@ -30,40 +31,17 @@ DATASET_ENCODING = "ISO-8859-1"
 # text cleaning
 TEXT_CLEANING_RE = "@\S+|https?:\S+|http?:\S|[^A-Za-z0-9]+"
 
+train_filepath = "./example_training/input/training.1600000.processed.noemoticon.csv"
 
+# In[2]:
 # open and read data file
 print("Open file:", "training_data.csv")
-df = pd.read_csv("training_data.csv", encoding=DATASET_ENCODING , names=DATASET_COLUMNS)
+df = pd.read_csv(train_filepath, encoding=DATASET_ENCODING , names=DATASET_COLUMNS)
 
 # print the size of the data set
 print("Dataset size:", len(df))
 
-"""
-# decode sentiment
-decode_map = {0: "NEGATIVE", 2: "NEUTRAL", 4: "POSITIVE"}
-def decode_sentiment(label):
-    return decode_map[int(label)]
-
-
-# store targets
-df.target = df.target.apply(lambda x: decode_sentiment(x))
-
-
-#count targets
-target_cnt = Counter(df.target)
-
-plt.figure(figsize=(16,8))
-plt.bar(target_cnt.keys(), target_cnt.values())
-plt.title("Dataset labels distribuition")
-plt.show()
-"""
-
-"""
-print("before processing: ", df.iloc[0].text)
-print("label: ", df.iloc[0].target)
-"""
-
-
+# In[3]:
 # preprocess method
 def preprocess(text, stem=False):
     # Remove link,user and special characters
@@ -77,69 +55,69 @@ def preprocess(text, stem=False):
                 tokens.append(token)
     return " ".join(tokens)
 
-
-
 print(">>>>>>>>>>Preprocessing")
 # apply preprocess method
 df.text = df.text.apply(lambda x: preprocess(x))
 print("DONE!")
 
-"""
-print("after processing: ", df.iloc[0].text)
-print("label: ", df.iloc[0].target)
-"""
 
-#tokenize
-print(">>>>>>>>>>Tokenizing")
-nltk.download('punkt')
-df['text'] = df.apply(lambda row: nltk.word_tokenize(row['text']), axis=1)
-print("DONE!")
+# In[4]
+# building vocabulary
+
+# print(">>>>>>>>>>Tokenizing")
+# nltk.download('punkt')
+# df['text'] = df.apply(lambda row: nltk.word_tokenize(row['text']), axis=1)
+# print("DONE!")
 
 df = df.sample(frac=1).reset_index(drop=True)
-tweets_for_training = df.head(1000)
-tweets_for_testing = df.tail(100)
+tweets_for_training = df.head(120000)
+tweets_for_testing = df.tail(40000)
 
 print(">>>>>>>>>>Building Vocabulary")
-feature_collection = Features()
-for id in tweets_for_training.index: 
-    feature_collection.add_to_vocab(df['text'][id])
+# feature_collection = Features()
+# for id in tweets_for_training.index: 
+#     feature_collection.add_to_vocab(df['text'][id])
+
+tweet_train = np.array(tweets_for_training['text'])
+y_train = np.array(tweets_for_training['target']/4, dtype=int)
+
+tweet_test = np.array(tweets_for_testing['text'])
+y_test = np.array(tweets_for_testing['target']/4, dtype=int)
+
+cv = CountVectorizer()
+X_train = cv.fit_transform(tweet_train)
+X_test = cv.transform(tweet_test)
+
 print("DONE!")
-print("Vocabulary size: ", len(feature_collection.train_vocab))
+print("Vocabulary size: ", X_train.shape[1])
 #print(feature_collection.train_vocab)
 
-"""
-print(">>>>>>>>>>Extracting Feature")
-current_features = []
-for id in df.tail(1).index:
-    current_features = feature_collection.extractor(df['text'][id], feature_collection.train_vocab)
-print("DONE!")
-print("Vocabulary size: ", len(feature_collection.train_vocab))
-print(current_features)
-"""
-
+# In[5]
 print(">>>>>>>>>>Training model")
-model = train_LR(tweets_for_training, feature_collection, feature_collection.train_vocab)
+# model = train_LR(tweets_for_training, feature_collection, feature_collection.train_vocab)
+
+model = LogisticRegression()
+history = model.fit(X_train, y_train)
 print("DONE!")
 
+plt.plot(history)
+plt.show()
+
+# In[6]
 print(">>>>>>>>>>Classifying")
 predictions = []
-for id in tweets_for_testing.index: 
-    predict = model.predict(df['text'][id], feature_collection)
-    predictions.append(predict)
+
+prediction = model.predict(X_test)
+
+# for id in tweets_for_testing.index: 
+#     predict = model.predict(df['text'][id], feature_collection)
+#     predictions.append(predict)
 print("DONE!")
 
 print(">>>>>>>>>>Evaluating")
-targets = tweets_for_testing['target']
-modified_targets = targets.replace(4, 1)
-evaluation(modified_targets.values.tolist(), predictions)
+# targets = tweets_for_testing['target']
+# modified_targets = targets.replace(4, 1)
+# evaluation(modified_targets.values.tolist(), predictions)
+accuracy = np.mean(y_test == prediction)
+print(f'Accuracy is {accuracy*100:.4f}%')
 print("DONE!")
-
-
-
-
-
-
-    
-
-
-
