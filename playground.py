@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
-
+ 
 import os
 import time
 from collections import Counter
@@ -45,6 +45,7 @@ df = pd.read_csv(train_filepath, encoding=DATASET_ENCODING , names=DATASET_COLUM
 # print the size of the data set
 print("Dataset size:", len(df))
 
+df = df.sample(frac=0.1).reset_index(drop=True)
 # In[3]:
 # preprocess method
 def preprocess(text, stem=False):
@@ -73,9 +74,8 @@ print("DONE!")
 # df['text'] = df.apply(lambda row: nltk.word_tokenize(row['text']), axis=1)
 # print("DONE!")
 
-df = df.sample(frac=0.1).reset_index(drop=True)
-#tweets_for_training = df.head(120000)
-#tweets_for_testing = df.tail(40000)
+
+#df = df.sample(frac=0.1).reset_index(drop=True)
 tweets_for_training, tweets_for_testing, y_tr, y_te = train_test_split(df, df['text'], test_size=SPLIT_SIZE, random_state=0)
 
 print(">>>>>>>>>>Building Vocabulary")
@@ -89,9 +89,12 @@ y_train = np.array(tweets_for_training['target']/4, dtype=int)
 tweet_test = np.array(tweets_for_testing['text'])
 y_test = np.array(tweets_for_testing['target']/4, dtype=int)
 
+#print(tweet_train)
 cv = CountVectorizer()
-X_train = cv.fit_transform(tweet_train)
-X_test = cv.transform(tweet_test)
+X_train = np.array(cv.word2vec_init(tweet_train))
+X_test = np.array(cv.word2vec(tweet_test))
+# X_train = cv.fit_transform(tweet_train)
+# X_test = cv.transform(tweet_test)
 
 print("DONE!")
 print("Vocabulary size: ", X_train.shape[1])

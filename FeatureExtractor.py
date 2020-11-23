@@ -1,6 +1,7 @@
 # from collections import Counter
 import numpy as np
 import operator
+from gensim.models import word2vec
 
 class CountVectorizer:
     """
@@ -11,13 +12,16 @@ class CountVectorizer:
     def __init__(self):
         self.vocab = np.array([])
         self.word2id = {}
-
+        self.model = None
+        
     def fit(self, documents, max_vocab=5000):
         """
-        Learn the vocabulary dictionary.
+        Learn the vocabulary dictionary. 
 
         Input:
             documents: ndarray (n_documents, )
+        Output:
+            list of most frequent word, and their unique ids
         """
 
         vocab_full = {}
@@ -88,7 +92,44 @@ class CountVectorizer:
                 X[doc_id, word_id] += 1
 
         return X
-
+    
+    def word2vec_init(self, tweet):
+        W2V_SIZE = 128
+        W2V_WINDOW = 5
+        W2V_MIN_COUNT = 3
+        W2V_EPOCH = 16
+        documents= [s.split() for s in tweet]
+        w2v_model = word2vec.Word2Vec(size=W2V_SIZE, window=W2V_WINDOW, min_count=W2V_MIN_COUNT, workers=8)
+        w2v_model.build_vocab(documents)
+        w2v_model.train(documents, total_examples=len(documents), epochs=W2V_EPOCH)
+        self.model = w2v_model
+        
+        embeded_tweets = []
+        for t in documents:
+            vec = np.zeros((W2V_SIZE))
+            for word in t:
+                if word in w2v_model.wv: 
+                    vec += w2v_model.wv.vectors[w2v_model.wv.vocab[word].index]
+            if(len(t)!=0): vec = vec/len(t)
+            embeded_tweets.append(vec)
+        return embeded_tweets
+    
+    def word2vec(self, tweet):
+        W2V_SIZE = 128
+        W2V_WINDOW = 5
+        W2V_MIN_COUNT = 3
+        W2V_EPOCH = 16
+        
+        documents= [s.split() for s in tweet]
+        embeded_tweets = []
+        for t in documents:
+            vec = np.zeros((W2V_SIZE))
+            for word in t:
+                if word in self.model.wv: 
+                    vec += self.model.wv.vectors[self.model.wv.vocab[word].index]
+            if(len(t)!=0): vec = vec/len(t)
+            embeded_tweets.append(vec)
+        return embeded_tweets
 # class Features(object):
 
 #     def __init__(self):
