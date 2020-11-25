@@ -1,6 +1,4 @@
 import numpy as np
-from sklearn.metrics import confusion_matrix, classification_report
-import print_results from Evalution
 # import pandas as pd
 # from math import e
 
@@ -85,9 +83,6 @@ class LogisticRegression:
             # Early stopping when mean loss of an epoch is smaller than a tolerance
             if epoch_error < tolerance:
                 break
-
-        #Print out Confsuion matrix and Classification Report
-        print_results(y_pred,target)
 
         return history
 

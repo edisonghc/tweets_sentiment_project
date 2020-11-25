@@ -2,7 +2,7 @@
 # coding: utf-8
 
 # In[1]:
-
+from Evaluation import print_results
 from FeatureExtractor import CountVectorizer
 from LogisticRegression import LogisticRegression
 from Evaluation import *
@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
- 
+
 import os
 import time
 from collections import Counter
@@ -18,10 +18,22 @@ import re
 from importlib import reload
 
 import nltk
-nltk.download('stopwords')
-from nltk.corpus import stopwords
+
 from nltk.tokenize import word_tokenize
 from  nltk.stem import SnowballStemmer
+
+import ssl
+
+try:
+    _create_unverified_https_context = ssl._create_unverified_context
+except AttributeError:
+    pass
+else:
+    ssl._create_default_https_context = _create_unverified_https_context
+
+nltk.download('stopwords')
+from nltk.corpus import stopwords
+
 stop_words = stopwords.words("english")
 stemmer = SnowballStemmer("english")
 
@@ -80,7 +92,7 @@ tweets_for_training, tweets_for_testing, y_tr, y_te = train_test_split(df, df['t
 
 print(">>>>>>>>>>Building Vocabulary")
 # feature_collection = Features()
-# for id in tweets_for_training.index: 
+# for id in tweets_for_training.index:
 #     feature_collection.add_to_vocab(df['text'][id])
 
 tweet_train = np.array(tweets_for_training['text'])
@@ -117,7 +129,7 @@ predictions = []
 
 prediction = model.predict(X_test)
 
-# for id in tweets_for_testing.index: 
+# for id in tweets_for_testing.index:
 #     predict = model.predict(df['text'][id], feature_collection)
 #     predictions.append(predict)
 print("DONE!")
@@ -127,5 +139,8 @@ print(">>>>>>>>>>Evaluating")
 # modified_targets = targets.replace(4, 1)
 # evaluation(modified_targets.values.tolist(), predictions)
 accuracy = np.mean(y_test == prediction)
-print(f'Accuracy is {accuracy*100:.4f}%')
+print(f'Accuracy is {accuracy*100}%')
+
+#Print out Confsuion matrix and Classification Report
+print_results(prediction,y_test)
 print("DONE!")
