@@ -1,4 +1,6 @@
 import numpy as np
+from sklearn.metrics import confusion_matrix, classification_report
+import print_results from Evalution
 # import pandas as pd
 # from math import e
 
@@ -12,28 +14,28 @@ class LogisticRegression:
         self.weights = np.array([])
 
     def init_weight(self, num_weight):
-        
+
         # self.weights = np.zeros(num_weight)
         self.weights = np.random.uniform(low=-1, high=1, size=num_weight)
 
 
     def predict(self, X, added_bias=False, output_prob=False):
         """
-        :param 
+        :param
             X: ndarray (n_samples, n_features)
             output_prob: return binary class label or probability of positive class, default True
         :return: [0,1] for neg or pos class OR probability of positive class
         """
-        
+
         # if self.added_bias:
         #     input = np.append([1],X)
-        
+
         if added_bias:
             input = X
         else:
             input = np.column_stack((np.ones(len(X)), X))
 
-        # Get the sigmoid function 
+        # Get the sigmoid function
         ayda = input @ self.weights
         prob = 1 / (1 + np.exp(-1 * ayda))
 
@@ -44,11 +46,12 @@ class LogisticRegression:
             return np.array(prob > 0.5, dtype=int)
 
 
+    ### Adding in confusion matrix to end of fit method
     def fit(self, X, target, learning_rate=0.3, max_epoch=100, tolerance=1E-3):
         """
         Train a logistic regression model.
         """
-        
+
         epoch_size = len(X)
         history = np.array([])
 
@@ -58,9 +61,9 @@ class LogisticRegression:
         input = np.column_stack((np.ones(len(X)), X))
 
         # Train the training set for specific times
-        for _ in range(max_epoch): 
-            
-            # Train the set in a random order    
+        for _ in range(max_epoch):
+
+            # Train the set in a random order
             order = np.random.choice(range(epoch_size), size=epoch_size, replace=False)
             epoch_error = 0
 
@@ -68,13 +71,13 @@ class LogisticRegression:
 
                 # Update the weight vector through the gradient according to the loss
                 y_pred = self.predict(input[i], added_bias=True, output_prob=True)
-                
+
                 error = target[i] - y_pred
                 epoch_error += error ** 2
 
                 gradient = error * input[i]
                 self.weights = self.weights + learning_rate * gradient
-            
+
             # Log the loss
             epoch_error /= epoch_size
             history = np.append(history, epoch_error)
@@ -82,7 +85,10 @@ class LogisticRegression:
             # Early stopping when mean loss of an epoch is smaller than a tolerance
             if epoch_error < tolerance:
                 break
-        
+
+        #Print out Confsuion matrix and Classification Report
+        print_results(y_pred,target)
+
         return history
 
     # def predict_2(self, tweet, feature_extractor):
@@ -90,13 +96,13 @@ class LogisticRegression:
     #     :param ex_words: words (List[str]) in the sentence to classify
     #     :return: Either 0 for negative class or 1 for positive class
     #     """
-        
+
     #     vocab = feature_extractor.train_vocab
-        
+
     #     #get the feature vector by extractor
     #     feature_vector = feature_extractor.extractor(tweet, vocab)
-        
-    #     #get the sigmoid function 
+
+    #     #get the sigmoid function
     #     power = np.sum(np.multiply(self.weights[1:], feature_vector)) + self.weights[0]
     #     prob = 1/(1+np.exp(-1*power))
     #     #evaluate the probability to give a result
@@ -123,11 +129,11 @@ class LogisticRegression:
 
 
     #     # train the training set for specific times
-    #     for t in range(training_num): 
-    #         #train the set in a random order    
+    #     for t in range(training_num):
+    #         #train the set in a random order
     #         shuffled = tweets_for_training.sample(frac = 1).reset_index(drop=True)
     #         for i in range(shuffled.shape[0]-1):
-    #             #update the weight vector through the gradient according to the loss 
+    #             #update the weight vector through the gradient according to the loss
     #             feature_vector = feature_extractor.extractor(shuffled.iloc[i].text, vocab)
     #             power = np.sum(np.multiply(feature_vector,weight[1:]))+weight[0]
     #             predict_prob = 1/(1+e**(-1*power))
@@ -136,6 +142,5 @@ class LogisticRegression:
                 # gradient = np.append(difference,gradient)
     #             weight = weight - gradient * learning_rate
     #             model.weight_vector = weight
-                
-    #     return model
 
+    #     return model
