@@ -23,10 +23,10 @@ def print_results(y_pred,y_true):
     assert (len(y_pred) == len(y_true)),'The number of inputs does not match the number of outputs'
     ### How to read the confusion_matrix
     print('Rows represent the predicted class and columns represent the actual class')
-    print(f"Confusion Matrix: {confusion_matrix(y_true,y_pred)}")
+    print(f"Confusion Matrix: \n {confusion_matrix(y_true,y_pred)}")
     print('Classification Report')
     ### You can pass another variable: target_names to get a labeled result - this is recommended
-    print(f"Classification Report: {classification_report(y_true,y_pred)}")
+    print(f" {classification_report(y_true,y_pred)}")
 
     fpr, tpr, threshold = roc_curve(y_true, y_pred)
     roc_auc = auc(fpr, tpr)

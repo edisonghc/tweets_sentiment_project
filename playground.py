@@ -85,7 +85,7 @@ print("DONE!")
 # nltk.download('punkt')
 # df['text'] = df.apply(lambda row: nltk.word_tokenize(row['text']), axis=1)
 # print("DONE!")
-
+# df = df[:10000]
 
 #df = df.sample(frac=0.1).reset_index(drop=True)
 tweets_for_training, tweets_for_testing, y_tr, y_te = train_test_split(df, df['text'], test_size=SPLIT_SIZE, random_state=0)
@@ -103,10 +103,10 @@ y_test = np.array(tweets_for_testing['target']/4, dtype=int)
 
 #print(tweet_train)
 cv = CountVectorizer()
-X_train = np.array(cv.word2vec_init(tweet_train))
-X_test = np.array(cv.word2vec(tweet_test))
-# X_train = cv.fit_transform(tweet_train)
-# X_test = cv.transform(tweet_test)
+# X_train = np.array(cv.word2vec_init(tweet_train))
+# X_test = np.array(cv.word2vec(tweet_test))
+X_train = cv.fit_transform(tweet_train)
+X_test = cv.transform(tweet_test)
 
 print("DONE!")
 print("Vocabulary size: ", X_train.shape[1])
@@ -139,7 +139,7 @@ print(">>>>>>>>>>Evaluating")
 # modified_targets = targets.replace(4, 1)
 # evaluation(modified_targets.values.tolist(), predictions)
 accuracy = np.mean(y_test == prediction)
-print(f'Accuracy is {accuracy*100}%')
+print(f'Accuracy is {accuracy*100:.4f}%')
 
 #Print out Confsuion matrix and Classification Report
 print_results(prediction,y_test)
