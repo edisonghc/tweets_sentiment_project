@@ -130,28 +130,51 @@ class CountVectorizer:
             if(len(t)!=0): vec = vec/len(t)
             embeded_tweets.append(vec)
         return embeded_tweets
-# class Features(object):
 
-#     def __init__(self):
-#         self.train_vocab = []
+
+class Features(object):
+    """
+    Bag of Words Feature Extractor
+    """
+    def __init__(self):
+        self.train_vocab = []
     
     
-#     def add_to_vocab(self, processed_tweet):
-#         for word in processed_tweet:
-#             if not word in self.train_vocab:
-#                 self.train_vocab.append(word.lower())
+    def add_to_vocab(self, processed_tweet):
+        """
+        Add valid words to the vocabulary
+        :param processed_tweet: the processed tweet text
+        """
+        #iterate over the text
+        for word in processed_tweet:
+            #add only new words
+            if not word in self.train_vocab:
+                #do not add words containing digit
+                if not any(char.isdigit() for char in word):
+                    #do not add strange words of length greater than 15
+                    if not len(word)>15:
+                        self.train_vocab.append(word.lower())
 
         
     
-#     def extractor(self, processed_tweet, vocab):
-#         test_features = np.zeros(len(vocab))
-#         ids = []
-#         for word in processed_tweet:
-#             try:
-#                 index = vocab.index(word)
-#             except ValueError:
-#                 index = -1
-#             if index >= 0:
-#                 test_features[index] = test_features[index]+1
+    def extractor(self, processed_tweet, vocab):
+        """
+        feature extractor for bag-of-words embedding
+        :param processed_tweet: the processed tweet text
+        :param vocab: the vocabulary for feature extraction
+        :return text_features: the feature vector of the given processed tweet 
+        """
+        #initialize the feature vector
+        test_features = np.zeros(len(vocab))
+        #iterate over the tweet text
+        for word in processed_tweet:
+            #find the index based on the word
+            try:
+                index = vocab.index(word)
+            except ValueError:
+                index = -1
+            #update the count
+            if index >= 0:
+                test_features[index] = test_features[index]+1
 
-#         return test_features
+        return test_features

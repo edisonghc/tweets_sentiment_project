@@ -10,12 +10,15 @@ def evaluation(targets, predictions):
     num_total = 0
     if len(targets) != len(predictions):
         raise Exception("Mismatched gold/pred lengths: %i / %i" % (len(targets), len(predictions)))
+    #iterate over all results
     for id in range(0, len(targets)):
+        #check the num of correct prediction
         target = targets[id]
         prediction = predictions[id]
         if prediction == target:
             num_correct += 1
         num_total += 1
+    #print the results
     print("Accuracy: %i / %i = %f" % (num_correct, num_total, float(num_correct) / num_total))
 
 

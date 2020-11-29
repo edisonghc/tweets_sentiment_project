@@ -56,8 +56,9 @@ df = pd.read_csv(train_filepath, encoding=DATASET_ENCODING , names=DATASET_COLUM
 
 # print the size of the data set
 print("Dataset size:", len(df))
-
+# shuffle the data set
 df = df.sample(frac=0.1).reset_index(drop=True)
+
 # In[3]:
 # preprocess method
 def preprocess(text, stem=False):
