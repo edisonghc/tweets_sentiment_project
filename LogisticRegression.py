@@ -86,9 +86,10 @@ class LogisticRegression:
 
         return history
 
-class Logistic_Regression2(object):
+class Logistic_Regression_for_BoW(object):
     """
-    Another implementation of logistic regression model
+    Author: Xinyue Li
+    implementation of logistic regression model for the bag-of-words feature extrator
     """
     def __init__(self):
         self.weights = np.array([])
@@ -122,12 +123,12 @@ class Logistic_Regression2(object):
 
 def train_LR(tweets_for_training, feature_extractor, vocab):
     """
+    Author: Xinyue Li
     Train a logistic regression model.
     """
     # learning rate and training time for different feature extractor
     learning_rate = 0.5
     training_num = 15
-
 
 
     #set up logistic regression model

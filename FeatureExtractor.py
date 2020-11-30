@@ -134,6 +134,7 @@ class CountVectorizer:
 
 class Features(object):
     """
+    Author: Xinyue Li
     Bag of Words Feature Extractor
     """
     def __init__(self):

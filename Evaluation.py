@@ -4,7 +4,8 @@ import matplotlib.pyplot as plt
 
 def evaluation(targets, predictions):
     """
-    Prints evaluation statistics comparing targets and predictions,
+    Author: Xinyue Li
+    Prints evaluation statistics comparing targets and predictions
     """
     num_correct = 0
     num_total = 0
