@@ -62,6 +62,9 @@ df = df.sample(frac=0.1).reset_index(drop=True)
 # In[3]:
 # preprocess method
 def preprocess(text, stem=False):
+    """
+    Author: Edison Gu
+    """
     # Remove link,user and special characters
     text = re.sub(TEXT_CLEANING_RE, ' ', str(text).lower()).strip()
     tokens = []
@@ -118,6 +121,7 @@ print(">>>>>>>>>>Classifying")
 predictions = []
 
 prediction = model.predict(X_test)
+prediction_prob = model.predict(X_test,output_prob=True)
 
 
 print("DONE!")
@@ -128,7 +132,7 @@ accuracy = np.mean(y_test == prediction)
 print(f'Accuracy is {accuracy*100:.4f}%')
 
 #Print out Confsuion matrix and Classification Report
-print_results(prediction,y_test)
+print_results(prediction_prob,y_test)
 print("DONE!")
 
 
@@ -151,7 +155,7 @@ def write_output(weights, output_path):
     write_file.close()
 
 
-def run_on_BoW_LR:
+def run_on_BoW_LR():
     """
     Author: Xinyue Li
     Train, test and evalute with the Bag-of-Words option and Logistic Regression model
@@ -206,7 +210,7 @@ def run_on_BoW_LR:
 
 #run_on_BoW_LR
 
-def test_on_BoW_LR:
+def test_on_BoW_LR():
     """
     Author: Xinyue Li
     Make the prediction on the testing data set basd on the trained LR model

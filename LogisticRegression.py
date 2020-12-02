@@ -4,6 +4,7 @@ import numpy as np
 
 class LogisticRegression:
     """
+    Author: Edison Gu, Xinyue Li
     Mimic the behavior of:
         sklearn.linear_model.LogisticRegression
     """

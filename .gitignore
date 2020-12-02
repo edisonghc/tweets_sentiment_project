@@ -5,3 +5,4 @@ example_training/training.1600000.processed.noemoticon.csv
 example_training/.ipynb_checkpoints/twitter-sentiment-analysis-checkpoint.ipynb
 example_training/input/training.1600000.processed.noemoticon.csv
 *.csv
+*.pyc

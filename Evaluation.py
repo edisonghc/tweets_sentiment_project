@@ -1,6 +1,6 @@
 from sklearn.metrics import confusion_matrix, classification_report,roc_curve,auc
 import matplotlib.pyplot as plt
-
+import numpy as np
 
 def evaluation(targets, predictions):
     """
@@ -23,16 +23,17 @@ def evaluation(targets, predictions):
     print("Accuracy: %i / %i = %f" % (num_correct, num_total, float(num_correct) / num_total))
 
 
-def print_results(y_pred,y_true):
-    assert (len(y_pred) == len(y_true)),'The number of inputs does not match the number of outputs'
+def print_results(y_score,y_true):
+    assert (len(y_score) == len(y_true)),'The number of inputs does not match the number of outputs'
     ### How to read the confusion_matrix
     print('Rows represent the predicted class and columns represent the actual class')
+    y_pred = np.array(y_score > 0.5, dtype=int)
     print(f"Confusion Matrix: \n {confusion_matrix(y_true,y_pred)}")
     print('Classification Report')
     ### You can pass another variable: target_names to get a labeled result - this is recommended
     print(f" {classification_report(y_true,y_pred)}")
 
-    fpr, tpr, threshold = roc_curve(y_true, y_pred)
+    fpr, tpr, threshold = roc_curve(y_true, y_score, pos_label=1)
     roc_auc = auc(fpr, tpr)
 
     plt.title('Receiver Operating Characteristic')
