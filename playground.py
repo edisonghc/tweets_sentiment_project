@@ -97,12 +97,18 @@ y_test = np.array(tweets_for_testing['target']/4, dtype=int)
 
 
 cv = CountVectorizer()
-# X_train = np.array(cv.word2vec_init(tweet_train))
-# X_test = np.array(cv.word2vec(tweet_test))
-X_train = cv.fit_transform(tweet_train)
-X_test = cv.transform(tweet_test)
+
+X_train = np.array(cv.word2vec_init(tweet_train))
+X_test = np.array(cv.word2vec(tweet_test))
+
+# X_train = cv.fit_transform(tweet_train)
+# X_test = cv.transform(tweet_test)
 
 print("DONE!")
+
+print("Training shape: ", X_train.shape)
+print("Testing shape: ", X_test.shape)
+
 print("Vocabulary size: ", X_train.shape[1])
 
 
