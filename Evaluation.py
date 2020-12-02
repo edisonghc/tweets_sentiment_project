@@ -22,7 +22,7 @@ def evaluation(targets, predictions):
     #print the results
     print("Accuracy: %i / %i = %f" % (num_correct, num_total, float(num_correct) / num_total))
 
-
+#Author: Simon Manning
 def print_results(y_score,y_true):
     assert (len(y_score) == len(y_true)),'The number of inputs does not match the number of outputs'
     ### How to read the confusion_matrix
@@ -46,3 +46,8 @@ def print_results(y_score,y_true):
     plt.xlabel('False Positive Rate')
     plt.show()
     return None
+
+#Author: Simon Manning
+def get_misclassified_rows(x, y_pred, y_test):
+    triples = zip(list(x,y_pred,y_test))
+    return [i for i in triples if (i[1] != i[2])]

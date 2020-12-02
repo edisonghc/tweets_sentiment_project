@@ -1,8 +1,4 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[1]:
-from Evaluation import print_results
+from Evaluation import print_results, get_misclassified_rows
 from FeatureExtractor import CountVectorizer
 from LogisticRegression import LogisticRegression
 from Evaluation import *
@@ -23,6 +19,12 @@ from nltk.tokenize import word_tokenize
 from  nltk.stem import SnowballStemmer
 
 import ssl
+
+"""
+Authors: Edison Gu, Xinyue Li, Simon Manning
+Mimic the behavior of:
+    sklearn.linear_model.LogisticRegression
+"""
 
 try:
     _create_unverified_https_context = ssl._create_unverified_context
@@ -139,6 +141,9 @@ print(f'Accuracy is {accuracy*100:.4f}%')
 
 #Print out Confsuion matrix and Classification Report
 print_results(prediction_prob,y_test)
+print('The first 5 misclassified rows are as follows: ')
+print('The format of these rows is: (X value: Y Predicted, Y Actual)')
+print(get_misclassified_rows(X_test, prediction_prob, y_test)[:5])
 print("DONE!")
 
 
@@ -156,8 +161,8 @@ def write_output(weights, output_path):
     #write the data into the file
     for l in weights:
         write_file.write(str(l) + "\n")
-    
-    #close the file 
+
+    #close the file
     write_file.close()
 
 
@@ -182,15 +187,15 @@ def run_on_BoW_LR():
     tweets_for_training = df.head(1000000)
     tweets_for_testing = df.tail(1000)
 
-    #build up the vocabulary 
+    #build up the vocabulary
     print(">>>>>>>>>>Building Vocabulary")
     feature_collection = Features()
-    for id in tweets_for_training.index: 
+    for id in tweets_for_training.index:
         feature_collection.add_to_vocab(df['text'][id])
     print("DONE!")
     print("Vocabulary size: ", len(feature_collection.train_vocab))
 
-    #train the model 
+    #train the model
     print(">>>>>>>>>>Training model")
     model = Logistic_Regression_for_BoW(tweets_for_training, feature_collection, feature_collection.train_vocab)
     print("DONE!")
@@ -202,12 +207,12 @@ def run_on_BoW_LR():
     #classify
     print(">>>>>>>>>>Classifying")
     predictions = []
-    for id in tweets_for_testing.index: 
+    for id in tweets_for_testing.index:
         predict = model.predict(df['text'][id], feature_collection)
         predictions.append(predict)
     print("DONE!")
 
-    #evaluate the accuracy 
+    #evaluate the accuracy
     print(">>>>>>>>>>Evaluating")
     targets = tweets_for_testing['target']
     modified_targets = targets.replace(4, 1) # 4 is positive in the data file
@@ -224,18 +229,18 @@ def test_on_BoW_LR():
     # open and read data file
     print("Open file:", "ExtractedTweets.csv")
     df = pd.read_csv("ExtractedTweets.csv", encoding=DATASET_ENCODING , names=DATASET_COLUMNS)
-    
+
     #neglect the first row and shuffle the data
     df = df.iloc[1:]
     df = df.sample(frac=1).reset_index(drop=True)
     df_democrat = df.loc[df['party'] == "Democrat"]
     df_republican = df.loc[df['party'] == "Republican"]
-    
+
     #print the size of the data set
     print("Dataset size:", len(df))
     print("Democrat dataset size", len(df_democrat))
     print("Republican dataset size", len(df_republican))
-    
+
     print(">>>>>>>>>>Preprocessing")
     #apply preprocess method
     df.tweet = df.tweet.apply(lambda x: preprocess(x))
@@ -265,7 +270,7 @@ def test_on_BoW_LR():
     #classify and count results on democrats
     print(">>>>>>>>>>Classifying")
     predictions_d = []
-    for id in df_democrat.index: 
+    for id in df_democrat.index:
         predict = model.predict(df_democrat['tweet'][id], feature_extract)
         predictions_d.append(predict)
     pos_democrat = predictions_d.count(1)
@@ -273,13 +278,13 @@ def test_on_BoW_LR():
 
     #classify and count results on republicans
     predictions_r = []
-    for id in df_republican.index: 
+    for id in df_republican.index:
         predict = model.predict(df_republican['tweet'][id], feature_extract)
         predictions_r.append(predict)
     pos_republican = predictions_r.count(1)
     neg_republican = predictions_r.count(0)
 
-    #print out the prediction 
+    #print out the prediction
     print("DONE!")
     print("Democrat : ",predictions_d)
     print("Democrat positive: ",pos_democrat)

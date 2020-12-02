@@ -4,7 +4,7 @@ import numpy as np
 
 class LogisticRegression:
     """
-    Author: Edison Gu, Xinyue Li
+    Authors: Edison Gu, Xinyue Li, Simon Manning
     Mimic the behavior of:
         sklearn.linear_model.LogisticRegression
     """
@@ -94,21 +94,21 @@ class Logistic_Regression_for_BoW(object):
     """
     def __init__(self):
         self.weights = np.array([])
-        
+
 
     def init_weight(self, num_weight):
         self.weights = np.zeros(num_weight)
-    
+
     def predict(self, tweet, feature_extractor):
         """
         :param ex_words: words (List[str]) in the sentence to classify
         :return: Either 0 for negative class or 1 for positive class
         """
         vocab = feature_extractor.train_vocab
-        
+
         #get the feature vector by extractor
         feature_vector = feature_extractor.extractor(tweet, vocab)
-        #get the sigmoid function 
+        #get the sigmoid function
         power = np.sum(np.multiply(self.weights[1:], feature_vector)) + self.weights[0]
         #print(self.weights[0])
         #print(power)
@@ -139,11 +139,11 @@ def train_LR(tweets_for_training, feature_extractor, vocab):
 
 
     # train the training set for specific times
-    for t in range(training_num): 
-        #train the set in a random order    
+    for t in range(training_num):
+        #train the set in a random order
         shuffled = tweets_for_training.sample(frac = 1).reset_index(drop=True)
         for i in range(shuffled.shape[0]-1):
-            #update the weight vector through the gradient according to the loss 
+            #update the weight vector through the gradient according to the loss
             feature_vector = feature_extractor.extractor(shuffled.iloc[i].text, vocab)
             power = np.sum(np.multiply(feature_vector,weights[1:]))+weights[0]
             predict_prob = 1/(1+e**(-1*power))
@@ -152,5 +152,5 @@ def train_LR(tweets_for_training, feature_extractor, vocab):
             gradient = np.append(difference,gradient)
             weights = weights - gradient * learning_rate
             model.weights = weights
-            
+
     return model
