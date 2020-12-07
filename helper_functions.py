@@ -6,6 +6,34 @@ Authors: Xinyue Li
 
 """
 
+from FeatureExtractor import *
+from LogisticRegression import *
+from Evaluation import *
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+from sklearn.model_selection import train_test_split
+
+import re
+import nltk
+nltk.download('stopwords')
+from nltk.corpus import stopwords
+stop_words = stopwords.words("english")
+from  nltk.stem import SnowballStemmer
+stemmer = SnowballStemmer("english")
+
+# dataset information
+TRAIN_FILEPATH = "./example_training/input/training.1600000.processed.noemoticon.csv"
+DATASET_COLUMNS = ["target", "ids", "date", "flag", "user", "text"]
+DATASET_ENCODING = "ISO-8859-1"
+
+# text cleaning
+TEXT_CLEANING_RE = "@\S+|https?:\S+|http?:\S|[^A-Za-z0-9]+"
+
+
+
 def write_output(weights, output_path):
     """
     Author: Xinyue Li
@@ -153,3 +181,5 @@ def test_on_BoW_LR():
     print("Republican negative: ",neg_republican)
 
 #test_on_BoW_LR
+
+
