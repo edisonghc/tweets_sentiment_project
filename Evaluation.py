@@ -1,3 +1,8 @@
+"""
+Authors: Xinyue Li, Simon Manning
+    
+"""
+
 from sklearn.metrics import confusion_matrix, classification_report,roc_curve,auc
 import matplotlib.pyplot as plt
 import numpy as np
@@ -22,8 +27,14 @@ def evaluation(targets, predictions):
     #print the results
     print("Accuracy: %i / %i = %f" % (num_correct, num_total, float(num_correct) / num_total))
 
-#Author: Simon Manning
 def print_results(y_score,y_true):
+    """
+    Authors: Simon Manning
+    
+    Used in `main_classical.py'
+    
+    """
+
     assert (len(y_score) == len(y_true)),'The number of inputs does not match the number of outputs'
     ### How to read the confusion_matrix
     print('Rows represent the predicted class and columns represent the actual class')
@@ -47,7 +58,10 @@ def print_results(y_score,y_true):
     plt.show()
     return None
 
-#Author: Simon Manning
 def get_misclassified_rows(x, y_pred, y_test):
+    """
+    Authors: Simon Manning
+        
+    """
     triples = zip(list(x,y_pred,y_test))
     return [i for i in triples if (i[1] != i[2])]

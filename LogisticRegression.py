@@ -1,10 +1,17 @@
+"""
+Authors: Edison Gu, Xinyue Li
+    
+"""
+
 import numpy as np
-# import pandas as pd
-# from math import e
+from math import e
 
 class LogisticRegression:
     """
-    Authors: Edison Gu, Xinyue Li, Simon Manning
+    Authors: Edison Gu, Xinyue Li
+
+    Used in `main_classical.py'
+    
     Mimic the behavior of:
         sklearn.linear_model.LogisticRegression
     """
@@ -14,7 +21,6 @@ class LogisticRegression:
 
     def init_weight(self, num_weight):
 
-        # self.weights = np.zeros(num_weight)
         self.weights = np.random.uniform(low=-1, high=1, size=num_weight)
 
 
@@ -25,9 +31,6 @@ class LogisticRegression:
             output_prob: return binary class label or probability of positive class, default True
         :return: [0,1] for neg or pos class OR probability of positive class
         """
-
-        # if self.added_bias:
-        #     input = np.append([1],X)
 
         if added_bias:
             input = X
@@ -133,7 +136,7 @@ def train_LR(tweets_for_training, feature_extractor, vocab):
 
 
     #set up logistic regression model
-    model = Logistic_Regression()
+    model = Logistic_Regression_for_BoW()
     model.init_weight(len(vocab)+1)
     weights = model.weights
 

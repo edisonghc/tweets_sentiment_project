@@ -1,10 +1,18 @@
-# from collections import Counter
+"""
+Authors: Edison Gu, Xinyue Li, Ang Li
+    
+"""
+
 import numpy as np
 import operator
 from gensim.models import word2vec
 
 class CountVectorizer:
     """
+    Authors: Edison Gu, Xinyue Li
+
+    Used in `main_classical.py'
+
     Mimic the behavior of:
         sklearn.feature_extraction.text.CountVectorizer¶
     """
@@ -94,6 +102,13 @@ class CountVectorizer:
         return X
     
     def word2vec_init(self, tweet):
+        """
+        Authors: Ang Li
+
+        Used in `main_classical.py'
+    
+        """
+
         W2V_SIZE = 128
         W2V_WINDOW = 5
         W2V_MIN_COUNT = 3
