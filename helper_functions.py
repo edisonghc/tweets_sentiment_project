@@ -6,6 +6,34 @@ Authors: Xinyue Li
 
 """
 
+from FeatureExtractor import *
+from LogisticRegression import *
+from Evaluation import *
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+from sklearn.model_selection import train_test_split
+
+import re
+import nltk
+nltk.download('stopwords')
+from nltk.corpus import stopwords
+stop_words = stopwords.words("english")
+from  nltk.stem import SnowballStemmer
+stemmer = SnowballStemmer("english")
+
+# dataset information
+TRAIN_FILEPATH = "./example_training/input/training.1600000.processed.noemoticon.csv"
+DATASET_COLUMNS = ["target", "ids", "date", "flag", "user", "text"]
+DATASET_ENCODING = "ISO-8859-1"
+
+# text cleaning
+TEXT_CLEANING_RE = "@\S+|https?:\S+|http?:\S|[^A-Za-z0-9]+"
+
+
+
 def write_output(weights, output_path):
     """
     Author: Xinyue Li
@@ -79,77 +107,6 @@ def run_on_BoW_LR():
 
 #run_on_BoW_LR
 
-def test_on_BoW_LR():
-    """
-    Author: Xinyue Li
-    Make the prediction on the testing data set basd on the trained LR model
-    """
-    # open and read data file
-    print("Open file:", "ExtractedTweets.csv")
-    df = pd.read_csv("ExtractedTweets.csv", encoding=DATASET_ENCODING , names=DATASET_COLUMNS)
 
-    #neglect the first row and shuffle the data
-    df = df.iloc[1:]
-    df = df.sample(frac=1).reset_index(drop=True)
-    df_democrat = df.loc[df['party'] == "Democrat"]
-    df_republican = df.loc[df['party'] == "Republican"]
 
-    #print the size of the data set
-    print("Dataset size:", len(df))
-    print("Democrat dataset size", len(df_democrat))
-    print("Republican dataset size", len(df_republican))
 
-    print(">>>>>>>>>>Preprocessing")
-    #apply preprocess method
-    df.tweet = df.tweet.apply(lambda x: preprocess(x))
-    df_democrat.tweet = df_democrat.tweet.apply(lambda x: preprocess(x))
-    df_republican.tweet = df_republican.tweet.apply(lambda x: preprocess(x))
-    print("DONE!")
-
-    #tokenize
-    print(">>>>>>>>>>Tokenizing")
-    nltk.download('punkt')
-    df['tweet'] = df.apply(lambda row: nltk.word_tokenize(row['tweet']), axis=1)
-    print("DONE!")
-
-    #read weights and features from the file
-    weights = np.genfromtxt("output5.txt", delimiter=' ')
-    features = []
-    with open("features5.txt") as file_in:
-        for feature in file_in:
-            features.append(feature)
-
-    #set up the LR model
-    model = Logistic_Regression()
-    model.weights = weights
-    feature_extract = Features()
-    feature_extract.train_vocab = features
-
-    #classify and count results on democrats
-    print(">>>>>>>>>>Classifying")
-    predictions_d = []
-    for id in df_democrat.index:
-        predict = model.predict(df_democrat['tweet'][id], feature_extract)
-        predictions_d.append(predict)
-    pos_democrat = predictions_d.count(1)
-    neg_democrat = predictions_d.count(0)
-
-    #classify and count results on republicans
-    predictions_r = []
-    for id in df_republican.index:
-        predict = model.predict(df_republican['tweet'][id], feature_extract)
-        predictions_r.append(predict)
-    pos_republican = predictions_r.count(1)
-    neg_republican = predictions_r.count(0)
-
-    #print out the prediction
-    print("DONE!")
-    print("Democrat : ",predictions_d)
-    print("Democrat positive: ",pos_democrat)
-    print("Democrat negative: ",neg_democrat)
-
-    print("Republican: ", predictions_r)
-    print("Republican positive: ",pos_republican)
-    print("Republican negative: ",neg_republican)
-
-#test_on_BoW_LR
